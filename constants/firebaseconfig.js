@@ -33,7 +33,6 @@ const firebaseConfig = {
   measurementId: FIREBASE_MEASUREMENT_ID,
 };
 
-
 // 🧠 Vérifie si Firebase est déjà initialisé (important pour Expo)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
