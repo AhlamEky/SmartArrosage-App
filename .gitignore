@@ -42,3 +42,15 @@ app-example
 # generated native folders
 /ios
 /android
+
+# ---- BACKEND (Vercel API) ----
+backend/node_modules/
+backend/.env
+backend/.vercel/
+backend/*.log
+backend/serviceAccountKey.json
+backend/firebase-debug.log
+
+# Build outputs (si un jour tu build)
+backend/.output/
+backend/dist/
