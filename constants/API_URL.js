@@ -1,1 +1,1 @@
-export const API_URL = "https://ton-projet.vercel.app";
+export const API_URL = "https://smartarr-backend.vercel.app";
