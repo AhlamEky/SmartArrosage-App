@@ -2,7 +2,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { getAuth } from "firebase/auth";
-import { onValue, ref, set } from "firebase/database";
+import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import {
   ImageBackground,
@@ -59,11 +59,40 @@ export default function AccueilScreen() {
   }, [uid]);
 
   // 🌿 Gestion du bouton d’arrosage
-  const toggleArrosage = () => {
+  const toggleArrosage = async () => {
+    const newStatus = arrosage ? "OFF" : "ON";
+
+    try {
+      const response = await fetch(
+        "https://smartarr-backend.vercel.app/api/toggle-pump",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+           uid: uid,
+           status: newStatus
+          })
+        }
+      );
+
+      const result = await response.json();
+      console.log("API Response:", result);
+
+      if (result.success) {
+       setArrosage(!arrosage);
+      }
+    } catch (error) {
+    console.error("Erreur en envoyant la commande :", error);
+    }
+  };
+
+  /*const toggleArrosage = () => {
     const newStatus = arrosage ? "OFF" : "ON"; // inverse l'état
     setArrosage(!arrosage);
     set(ref(database, `users/${uid}/sensor/pumpStatus`), newStatus); // mise à jour Firebase
-  };
+  };*/
 
   // 🎨 Dégradé sable
   const gradientColors = ["#E6D3A3", "#DCC9A1", "#CBB994"] as const;
