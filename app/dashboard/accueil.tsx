@@ -22,6 +22,7 @@ export default function AccueilScreen() {
     humiditeAir: 0,
     humiditeSol: 0,
     pumpStatus: "OFF",
+    niveauEau: 0,
     derniereIrrigation: "-",
     prochaineIrrigation: "-",
   });
@@ -44,6 +45,7 @@ export default function AccueilScreen() {
           humiditeAir: dataFirebase.humidity || 0,
           humiditeSol: dataFirebase.soilMoisture || 0,
           pumpStatus: dataFirebase.pumpStatus || "OFF" ,
+          niveauEau: dataFirebase.waterLevel || 0,
           derniereIrrigation: "-",
           prochaineIrrigation: "-",
         });
@@ -58,25 +60,8 @@ export default function AccueilScreen() {
     return () => unsubscribe();
   }, [uid]);
    
-  const toggleArrosage = async () => {
-    const user = getAuth().currentUser;
-    if (!user) return alert("Utilisateur non connecté !");
-
-    const token = await user.getIdToken();
-    const route = arrosage ? "off" : "on";
-
-    await fetch(`https://smartarr-backend.vercel.app/api/pump/${route}`, {
-     method: "POST",
-     headers: {
-       Authorization: `Bearer ${token}`,
-     },
-    });
-
-    setArrosage(!arrosage);
-  };
-
  
-  /*const toggleArrosage = () => {
+ /* const toggleArrosage = () => {
     const newStatus = arrosage ? "OFF" : "ON"; // inverse l'état
     setArrosage(!arrosage);
     set(ref(database, `users/${uid}/sensor/pumpStatus`), newStatus); // mise à jour Firebase
@@ -90,7 +75,7 @@ export default function AccueilScreen() {
     { title: "Température de l’air", value: `${data.temperature}°C`, icon: "thermometer-outline" as const },
     { title: "Humidité de l’air", value: `${data.humiditeAir}%`, icon: "cloud-outline" as const },
     { title: "Humidité du sol", value: `${data.humiditeSol}%`, icon: "water-outline" as const },
-    { title: "État de la pompe", value: `${data.pumpStatus}`, icon: "speedometer-outline" as const },
+    { title: "Niveau d’eau", value: `${data.niveauEau}`, icon: "water" as const },
     { title: "Dernière irrigation", value: data.derniereIrrigation, icon: "time-outline" as const },
     { title: "Prochaine irrigation", value: data.prochaineIrrigation, icon: "calendar-outline" as const },
   ];
@@ -108,7 +93,7 @@ export default function AccueilScreen() {
           </Text>
 
           {/* 🔘 Bouton principal */}
-          <TouchableOpacity onPress={toggleArrosage}>
+          <TouchableOpacity /* tu peux rajouter une fonction si tu veux afficher plus d'infos */>
             <LinearGradient
               colors={gradientColors}
               start={{ x: 0, y: 0 }}
@@ -116,7 +101,7 @@ export default function AccueilScreen() {
               style={styles.mainButton}
             >
               <Text style={styles.mainButtonText}>
-                {arrosage ? "Arrêter l’arrosage" : "Démarrer l’arrosage"}
+                État de la pompe
               </Text>
             </LinearGradient>
           </TouchableOpacity>

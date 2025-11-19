@@ -1,4 +1,128 @@
-import { GreatVibes_400Regular, useFonts } from "@expo-google-fonts/great-vibes";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import {
+  ImageBackground,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+import { getAuth } from "firebase/auth";
+import { onValue, ref, set } from "firebase/database";
+import { database } from "../../constants/firebaseconfig";
+
+export default function ControleScreen() {
+  const auth = getAuth();
+  const uid = auth.currentUser?.uid || "ufhI3zN0M3SzPpAQULG66vjLY3D3";
+
+  const [pumpStatus, setPumpStatus] = useState("OFF");
+
+  useEffect(() => {
+    const dbRef = ref(database, `users/${uid}/sensor/pumpStatus`);
+
+    const unsubscribe = onValue(dbRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setPumpStatus(snapshot.val());
+      }
+    });
+
+    return () => unsubscribe();
+  }, [uid]);
+
+  const togglePump = () => {
+    const newStatus = pumpStatus === "ON" ? "OFF" : "ON";
+    setPumpStatus(newStatus);
+    set(ref(database, `users/${uid}/sensor/pumpStatus`), newStatus);
+  };
+
+  return (
+    <ImageBackground
+      source={require("../../assets/q.jpg")}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <StatusBar barStyle="light-content" />
+      <View style={styles.overlay}>
+        <ScrollView contentContainerStyle={{ alignItems: "center", paddingVertical: 60 }}>
+          <Text style={styles.title}>Contrôle de la pompe 🌱</Text>
+
+          <View style={styles.card}>
+            <Ionicons
+              name={pumpStatus === "ON" ? "flash" : "flash-off"}
+              size={50}
+              color="#111"
+              style={{ marginBottom: 12 }}
+            />
+            <Text style={styles.cardTitle}>Pompe actuellement : {pumpStatus}</Text>
+
+            <TouchableOpacity
+              onPress={togglePump}
+              style={[
+                styles.button,
+                { backgroundColor: pumpStatus === "ON" ? "#d9534f" : "#5cb85c" },
+              ]}
+            >
+              <Text style={styles.buttonText}>
+                {pumpStatus === "ON" ? "Arrêter la pompe" : "Démarrer la pompe"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>
+    </ImageBackground>
+  );
+}
+
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.25)",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 30,
+  },
+  card: {
+    backgroundColor: "rgba(205, 255, 170, 0.25)",
+    borderRadius: 18,
+    padding: 30,
+    width: "80%",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(205, 255, 170, 0.5)",
+    elevation: 5,
+  },
+  cardTitle: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  button: {
+    borderRadius: 25,
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+});
+
+
+/*import { GreatVibes_400Regular, useFonts } from "@expo-google-fonts/great-vibes";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -81,7 +205,7 @@ export default function ControleScreen() {
             paddingVertical: 60,
           }}
         >
-          {/* ---- Titre stylé ---- */}
+          {}// ---- Titre stylé ----
           <Text style={styles.title}> Contrôle du système</Text>
 
           <View style={styles.cardsContainer}>
@@ -184,4 +308,4 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
   },
-});
+});*/
