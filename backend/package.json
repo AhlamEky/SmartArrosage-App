@@ -7,5 +7,7 @@
     "deploy": "vercel --prod",
     "dev": "vercel dev"
   },
-  "dependencies": {}
+  "dependencies": {
+    "firebase-admin": "^13.6.0"
+  }
 }
