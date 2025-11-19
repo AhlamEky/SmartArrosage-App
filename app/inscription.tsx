@@ -9,6 +9,104 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  View
+} from "react-native";
+import { API_URL } from "../constants/API_URL";
+
+export default function InscriptionScreen() {
+  const router = useRouter();
+  const [nom, setNom] = useState("");
+  const [email, setEmail] = useState("");
+  const [telephone, setTelephone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSignup = async () => {
+    if (!nom || !email || !telephone || !password || !confirmPassword) {
+      Alert.alert("Erreur", "Veuillez remplir tous les champs !");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Erreur", "Les mots de passe ne correspondent pas !");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${API_URL}/api/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nom,
+          email,
+          telephone,
+          password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error);
+      }
+
+      Alert.alert("Succès", "Inscription réussie !");
+      router.replace("/dashboard/accueil");
+
+    } catch (error: any) {
+      Alert.alert("Erreur", error.message || "Échec de l'inscription");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <ImageBackground
+      source={require("../assets/plante.jpg")}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <StatusBar barStyle="dark-content" />
+
+      <View style={styles.overlay}>
+        <View style={styles.card}>
+          <Text style={styles.title}>SmartArr 🌱</Text>
+          <Text style={styles.subtitle}>Créer un nouveau compte</Text>
+
+          <TextInput placeholder="Nom complet" style={styles.input} value={nom} onChangeText={setNom}/>
+          <TextInput placeholder="Email" style={styles.input} value={email} onChangeText={setEmail}/>
+          <TextInput placeholder="Téléphone" style={styles.input} value={telephone} onChangeText={setTelephone}/>
+          <TextInput placeholder="Mot de passe" secureTextEntry style={styles.input} value={password} onChangeText={setPassword}/>
+          <TextInput placeholder="Confirmer le mot de passe" secureTextEntry style={styles.input} value={confirmPassword} onChangeText={setConfirmPassword}/>
+
+          <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
+            <Text style={styles.signupText}>S’inscrire</Text>
+          </TouchableOpacity>
+
+          <View style={styles.bottomText}>
+            <Text style={{ color: "#fff" }}>Déjà un compte ?</Text>
+            <TouchableOpacity onPress={() => router.push("/connexion")}>
+              <Text style={styles.signInText}> Se connecter</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </ImageBackground>
+  );
+}
+/*import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  Alert,
+  ImageBackground,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -76,7 +174,7 @@ export default function InscriptionScreen() {
    /* // Ici tu peux ajouter ton appel API ou logique d’inscription
     Alert.alert("Succès", "Inscription réussie !");
     router.replace("/dashboard/accueil");*/
-  };
+/*  };
 
   return (
     <ImageBackground
@@ -152,7 +250,7 @@ export default function InscriptionScreen() {
     </ImageBackground>
   );
 }
-
+*/
 const styles = StyleSheet.create({
   background: {
     flex: 1,

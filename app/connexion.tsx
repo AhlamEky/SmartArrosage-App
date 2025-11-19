@@ -1,5 +1,103 @@
 //app/connexion.tsx
 import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  Alert,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
+import { API_URL } from "../constants/API_URL";
+
+export default function ConnexionScreen() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Erreur", "Veuillez saisir votre email et mot de passe.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${API_URL}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error);
+      }
+
+      // 🔐 Sauvegarde du token en local (AsyncStorage)
+      // ⚠ tu peux l’ajouter si tu veux persister la session
+      // await AsyncStorage.setItem("idToken", data.idToken);
+      // await AsyncStorage.setItem("uid", data.uid);
+
+      Alert.alert("Connexion réussie ✅");
+      router.replace("/dashboard/accueil");
+
+    } catch (error: any) {
+      Alert.alert("Erreur", error.message || "Impossible de se connecter.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <ImageBackground
+      source={require("../assets/plante.jpg")}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <View style={styles.card}>
+          <Text style={styles.title}>SmartArr 🌿</Text>
+          <Text style={styles.subtitle}>Bienvenue, connectez-vous !</Text>
+
+          <TextInput
+            placeholder="Email"
+            placeholderTextColor="#e7efe7"
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+          />
+
+          <TextInput
+            placeholder="Mot de passe"
+            placeholderTextColor="#e7efe7"
+            secureTextEntry
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+          />
+
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginText}>Se connecter</Text>
+          </TouchableOpacity>
+
+          <View style={styles.bottomText}>
+            <Text style={{ color: "#fff" }}>Vous n'avez pas de compte ?</Text>
+            <TouchableOpacity onPress={() => router.push("/inscription")}>
+              <Text style={styles.signUpText}> S'inscrire</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </ImageBackground>
+  );
+}
+/*import { useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth"; //aj
 import React, { useState } from "react";
 import {
@@ -86,7 +184,7 @@ export default function ConnexionScreen() {
     </ImageBackground>
   );
 }
-
+*/
 const styles = StyleSheet.create({
   background: { flex: 1, justifyContent: "center" },
   overlay: {
