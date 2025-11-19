@@ -1,12 +1,11 @@
 {
-  "name": "backend",
+  "name": "smartarr-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "deploy": "vercel --prod",
+    "dev": "vercel dev"
   },
-  
-  "dependencies": {
-    "express": "^5.1.0"
-  }
+  "dependencies": {}
 }
