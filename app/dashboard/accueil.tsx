@@ -111,8 +111,7 @@ export default function AccueilScreen() {
     <ImageBackground
       source={require("../../assets/tt.jpg")}
       style={styles.background}
-      resizeMode="cover"
-    >
+      resizeMode="cover">
       <StatusBar barStyle="light-content" />
       <View style={styles.overlay}>
         <ScrollView contentContainerStyle={{ alignItems: "center", paddingVertical: 60 }}>
