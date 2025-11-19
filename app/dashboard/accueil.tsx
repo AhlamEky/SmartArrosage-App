@@ -57,37 +57,25 @@ export default function AccueilScreen() {
 
     return () => unsubscribe();
   }, [uid]);
-
-  // 🌿 Gestion du bouton d’arrosage
+   
   const toggleArrosage = async () => {
-    const newStatus = arrosage ? "OFF" : "ON";
+    const user = getAuth().currentUser;
+    if (!user) return alert("Utilisateur non connecté !");
 
-    try {
-      const response = await fetch(
-        "https://smartarr-backend.vercel.app/api/toggle-pump",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-           uid: uid,
-           status: newStatus
-          })
-        }
-      );
+    const token = await user.getIdToken();
+    const route = arrosage ? "off" : "on";
 
-      const result = await response.json();
-      console.log("API Response:", result);
+    await fetch(`https://smartarr-backend.vercel.app/api/pump/${route}`, {
+     method: "POST",
+     headers: {
+       Authorization: `Bearer ${token}`,
+     },
+    });
 
-      if (result.success) {
-       setArrosage(!arrosage);
-      }
-    } catch (error) {
-    console.error("Erreur en envoyant la commande :", error);
-    }
+    setArrosage(!arrosage);
   };
 
+ 
   /*const toggleArrosage = () => {
     const newStatus = arrosage ? "OFF" : "ON"; // inverse l'état
     setArrosage(!arrosage);
