@@ -50,8 +50,8 @@ export default function StatistiquesScreen() {
     const unsub = onValue(path, snap => {
       if (snap.exists()) {
         const data = snap.val();
-        setSoilHumidity(data.humidity || 0);
-        setAirHumidity(data.soilMoisture || 0);
+        setSoilHumidity(data.soilMoisture || 0);
+        setAirHumidity(data.humidity || 0);
         setTemperature(data.temperature || 0);
         setWaterLevel(data.waterLevel || 0);
       }
