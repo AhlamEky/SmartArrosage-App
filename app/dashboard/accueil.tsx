@@ -1,6 +1,5 @@
 //app/dashboard/accueil.tsx
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { getAuth } from "firebase/auth";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
@@ -10,8 +9,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { database } from "../../constants/firebaseconfig";
 
@@ -23,13 +21,13 @@ export default function AccueilScreen() {
     humiditeSol: 0,
     pumpStatus: "OFF",
     niveauEau: 0,
-    derniereIrrigation: "-",
-    prochaineIrrigation: "-",
+   // derniereIrrigation: "-",
+   // prochaineIrrigation: "-",
   });
 
   // 🌿 Récupération du user connecté
   const auth = getAuth();
-  const uid = auth.currentUser?.uid || "ufhI3zN0M3SzPpAQULG66vjLY3D3"; // fallback pour test
+  const uid = auth.currentUser?.uid ; // || "ufhI3zN0M3SzPpAQULG66vjLY3D3" fallback pour test
 
   // 🔁 Lire les données en temps réel depuis Firebase
   useEffect(() => {
@@ -46,8 +44,8 @@ export default function AccueilScreen() {
           humiditeSol: dataFirebase.soilMoisture || 0,
           pumpStatus: dataFirebase.pumpStatus || "OFF" ,
           niveauEau: dataFirebase.waterLevel || 0,
-          derniereIrrigation: "-",
-          prochaineIrrigation: "-",
+         // derniereIrrigation: "-",
+         // prochaineIrrigation: "-",
         });
 
         // synchroniser le bouton avec l'état réel
@@ -59,13 +57,7 @@ export default function AccueilScreen() {
 
     return () => unsubscribe();
   }, [uid]);
-   
- 
- /* const toggleArrosage = () => {
-    const newStatus = arrosage ? "OFF" : "ON"; // inverse l'état
-    setArrosage(!arrosage);
-    set(ref(database, `users/${uid}/sensor/pumpStatus`), newStatus); // mise à jour Firebase
-  };*/
+  
 
   // 🎨 Dégradé sable
   const gradientColors = ["#E6D3A3", "#DCC9A1", "#CBB994"] as const;
@@ -76,8 +68,8 @@ export default function AccueilScreen() {
     { title: "Humidité de l’air", value: `${data.humiditeAir}%`, icon: "cloud-outline" as const },
     { title: "Humidité du sol", value: `${data.humiditeSol}%`, icon: "water-outline" as const },
     { title: "Niveau d’eau", value: `${data.niveauEau}`, icon: "water" as const },
-    { title: "Dernière irrigation", value: data.derniereIrrigation, icon: "time-outline" as const },
-    { title: "Prochaine irrigation", value: data.prochaineIrrigation, icon: "calendar-outline" as const },
+   // { title: "Dernière irrigation", value: data.derniereIrrigation, icon: "time-outline" as const },
+   // { title: "Prochaine irrigation", value: data.prochaineIrrigation, icon: "calendar-outline" as const },
   ];
 
   return (
@@ -93,18 +85,25 @@ export default function AccueilScreen() {
           </Text>
 
           {/* 🔘 Bouton principal */}
-          <TouchableOpacity /* tu peux rajouter une fonction si tu veux afficher plus d'infos */>
-            <LinearGradient
-              colors={gradientColors}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.mainButton}
+          <View style={styles.pumpStatusCard}>
+            <Ionicons
+               name="speedometer-outline"
+               size={30}
+               color="#111"
+               style={{ marginBottom: 8 }}
+            />
+
+            <Text style={styles.pumpStatusTitle}>État de la pompe</Text>
+
+            <Text
+              style={[
+                styles.pumpStatusValue,
+                { color: data.pumpStatus === "ON" ? "#00FFAA" : "#FF6666" },
+              ]}
             >
-              <Text style={styles.mainButtonText}>
-                État de la pompe
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
+             {data.pumpStatus}
+            </Text>
+          </View>
 
           {/* 📋 Cartes capteurs */}
           <View style={styles.cardsContainer}>
@@ -124,6 +123,30 @@ export default function AccueilScreen() {
 
 // 💅 Styles
 const styles = StyleSheet.create({
+
+  pumpStatusCard: {
+  backgroundColor: "rgba(205, 255, 170, 0.30)",
+  borderRadius: 22,
+  padding: 26,
+  width: "85%",
+  alignItems: "center",
+  marginBottom: 30,
+  borderWidth: 1,
+  borderColor: "rgba(205, 255, 170, 0.6)",
+},
+
+pumpStatusTitle: {
+  color: "#fff",
+  fontWeight: "bold",
+  fontSize: 15,
+  marginBottom: 6,
+},
+
+pumpStatusValue: {
+  fontSize: 20,
+  fontWeight: "bold",
+},
+
   background: {
     flex: 1,
     justifyContent: "center",
@@ -138,7 +161,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 60,
   },
   mainButton: {
     borderRadius: 20,

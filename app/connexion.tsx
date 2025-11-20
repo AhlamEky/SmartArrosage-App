@@ -70,7 +70,7 @@ export default function ConnexionScreen() {
 
           <TouchableOpacity
             style={styles.loginButton}
-            onPress={() => router.replace("/dashboard/accueil")}
+            onPress={handleLogin}  // <-- Appelle la fonction handleLogin ici
           >
             <Text style={styles.loginText}>Se connecter</Text>
           </TouchableOpacity>

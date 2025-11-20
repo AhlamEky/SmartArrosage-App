@@ -1,7 +1,6 @@
 import { GreatVibes_400Regular } from "@expo-google-fonts/great-vibes";
 import { Poppins_600SemiBold, useFonts } from "@expo-google-fonts/poppins";
-import { Picker } from "@react-native-picker/picker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ImageBackground,
@@ -15,19 +14,46 @@ import {
   View,
 } from "react-native";
 
+// 🔥 IMPORT FIREBASE
+import { getAuth } from "firebase/auth";
+import { onValue, ref } from "firebase/database";
+import { database } from "../../constants/firebaseconfig";
+
 export default function ParametresScreen() {
-  // Charger les polices
   const [fontsLoaded] = useFonts({
     Poppins_600SemiBold,
     GreatVibes_400Regular,
   });
 
+  // 🌿 États
   const [darkMode, setDarkMode] = useState(false);
-  const [nom, setNom] = useState("Aya Jabrane");
-  const [email, setEmail] = useState("aya@example.com");
-  const [telephone, setTelephone] = useState("+212 600 000 000");
+
+  const [nom, setNom] = useState("");
+  const [email, setEmail] = useState("");
+  const [telephone, setTelephone] = useState("");
   const [motDePasse, setMotDePasse] = useState("********");
   const [langue, setLangue] = useState("fr");
+
+  // 🔥 Auth
+  const auth = getAuth();
+  const uid = auth.currentUser?.uid || "ufhI3zN0M3SzPpAQULG66vjLY3D3";
+
+  // 📌 Récupérer les données personnelles depuis Firebase
+  useEffect(() => {
+    const userRef = ref(database, `users/${uid}`);
+
+    const unsubscribe = onValue(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+
+        setNom(data.nom || "");
+        setEmail(data.email || "");
+        setTelephone(data.telephone || "");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [uid]);
 
   const toggleTheme = () => setDarkMode(!darkMode);
 
@@ -49,18 +75,11 @@ export default function ParametresScreen() {
   const inputBackground = darkMode ? "#555" : "rgba(255,255,255,0.85)";
   const textColor = darkMode ? "#fff" : "#111";
   const placeholderColor = darkMode ? "#ccc" : "#555";
-  const buttonColor = darkMode ? "#4CAF50" : "#6BA36F"; // ✅ couleur d'origine du bouton
+  const buttonColor = darkMode ? "#4CAF50" : "#6BA36F";
 
   if (!fontsLoaded) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#E8F5E9",
-        }}
-      >
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#E8F5E9" }}>
         <ActivityIndicator size="large" color="#4CAF50" />
       </View>
     );
@@ -74,106 +93,62 @@ export default function ParametresScreen() {
     >
       <StatusBar barStyle="light-content" />
       <View style={[styles.overlay, { backgroundColor: overlayColor }]}>
-        <ScrollView
-          contentContainerStyle={{ alignItems: "center", paddingVertical: 50 }}
-        >
-          {/* ---- Titre ---- */}
-          <Text style={[styles.title, { color: "#D8C3A5" }]}>
-            Paramètres
-          </Text>
+        <ScrollView contentContainerStyle={{ alignItems: "center", paddingVertical: 50 }}>
+          
+          <Text style={[styles.title, { color: "#fff", fontWeight: "bold", marginBottom: 40 }]}>Paramètres 🌱</Text>
 
           {/* ---- Mode sombre ---- */}
           <View style={[styles.card, { backgroundColor: cardBackground }]}>
             <View style={styles.row}>
-              <Text style={[styles.cardTitle, { color: textColor }]}>
-                Mode sombre
-              </Text>
-              <Switch
-                value={darkMode}
-                onValueChange={toggleTheme}
-                trackColor={{ false: "#C8DDB7", true: "#4CAF50" }}
-                thumbColor="#fff"
-              />
+              <Text style={[styles.cardTitle, { color: textColor }]}>Mode sombre</Text>
+              <Switch value={darkMode} onValueChange={toggleTheme} trackColor={{ false: "#C8DDB7", true: "#4CAF50" }} thumbColor="#fff" />
             </View>
           </View>
 
           {/* ---- Informations personnelles ---- */}
           <View style={[styles.card, { backgroundColor: cardBackground }]}>
-            <Text style={[styles.cardTitle, { color: textColor }]}>
-              Informations personnelles
-            </Text>
+            <Text style={[styles.cardTitle, { color: textColor }]}>Informations personnelles</Text>
 
             <TextInput
               value={nom}
               onChangeText={setNom}
-              style={[
-                styles.input,
-                { backgroundColor: inputBackground, color: textColor },
-              ]}
+              style={[styles.input, { backgroundColor: inputBackground, color: textColor }]}
               placeholder="Nom"
               placeholderTextColor={placeholderColor}
             />
+
             <TextInput
               value={email}
               onChangeText={setEmail}
-              style={[
-                styles.input,
-                { backgroundColor: inputBackground, color: textColor },
-              ]}
+              style={[styles.input, { backgroundColor: inputBackground, color: textColor }]}
               placeholder="Email"
               keyboardType="email-address"
               placeholderTextColor={placeholderColor}
             />
+
             <TextInput
               value={telephone}
               onChangeText={setTelephone}
-              style={[
-                styles.input,
-                { backgroundColor: inputBackground, color: textColor },
-              ]}
+              style={[styles.input, { backgroundColor: inputBackground, color: textColor }]}
               placeholder="Téléphone"
               keyboardType="phone-pad"
               placeholderTextColor={placeholderColor}
             />
-            <TextInput
-              value={motDePasse}
-              onChangeText={setMotDePasse}
-              style={[
-                styles.input,
-                { backgroundColor: inputBackground, color: textColor },
-              ]}
-              placeholder="Mot de passe"
-              secureTextEntry
-              placeholderTextColor={placeholderColor}
-            />
           </View>
 
-          {/* ---- Langue ---- */}
+          {/* ---- Langue ---- 
           <View style={[styles.card, { backgroundColor: cardBackground }]}>
             <Text style={[styles.cardTitle, { color: textColor }]}>Langue</Text>
-            <View
-              style={[
-                styles.pickerContainer,
-                { backgroundColor: inputBackground },
-              ]}
-            >
-              <Picker
-                selectedValue={langue}
-                onValueChange={(value) => setLangue(value)}
-                style={[styles.picker, { color: textColor }]}
-              >
+            <View style={[styles.pickerContainer, { backgroundColor: inputBackground }]}>
+              <Picker selectedValue={langue} onValueChange={setLangue} style={[styles.picker, { color: textColor }]}>
                 {langues.map((l) => (
                   <Picker.Item key={l.value} label={l.label} value={l.value} />
                 ))}
               </Picker>
             </View>
-          </View>
+          </View>*/}
 
-          {/* ---- Bouton Sauvegarder ---- */}
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: buttonColor }]}
-            onPress={() => alert("Paramètres sauvegardés ✅")}
-          >
+          <TouchableOpacity style={[styles.button, { backgroundColor: buttonColor }]}>
             <Text style={styles.buttonText}>Sauvegarder</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -182,20 +157,19 @@ export default function ParametresScreen() {
   );
 }
 
-// ---------------------- STYLES ---------------------- //
 const styles = StyleSheet.create({
   background: { flex: 1 },
   overlay: { flex: 1, alignItems: "center" },
   title: {
-    fontSize: 50,
-    fontFamily: "GreatVibes_400Regular", // 💎 Style French Script
+    fontSize: 30,
+   // fontFamily: "GreatVibes_400Regular",
     textAlign: "center",
-    marginTop: 4, // 🔥 le titre descend un peu
+    marginTop: 4,
     marginBottom: 15,
     letterSpacing: 1,
     textShadowColor: "rgba(0,0,0,0.4)",
-    textShadowOffset: { width: 2, height: 3 },
-    textShadowRadius: 6,
+   // textShadowOffset: { width: 2, height: 3 },
+   // textShadowRadius: 6,
   },
   card: {
     borderRadius: 18,
@@ -227,7 +201,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#C8DDB7",
   },
-  picker: { height: 50, textAlign: "center" },
+  picker: { height: 50 },
   button: {
     paddingVertical: 14,
     paddingHorizontal: 50,

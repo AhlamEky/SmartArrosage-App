@@ -30,7 +30,10 @@ export default function InscriptionScreen() {
       Alert.alert("Erreur", "Veuillez remplir tous les champs !");
       return;
     }
-
+    if (password.length < 6) {
+    Alert.alert("Erreur", "Le mot de passe doit contenir au moins 6 caractères.");
+    return;
+    }
     if (password !== confirmPassword) {
       Alert.alert("Erreur", "Les mots de passe ne correspondent pas !");
       return;

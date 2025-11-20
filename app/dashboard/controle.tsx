@@ -47,22 +47,36 @@ export default function ControleScreen() {
       <StatusBar barStyle="light-content" />
       <View style={styles.overlay}>
         <ScrollView contentContainerStyle={{ alignItems: "center", paddingVertical: 60 }}>
+          
           <Text style={styles.title}>Contrôle de la pompe 🌱</Text>
 
+          {/* 📌 Carte principale */}
           <View style={styles.card}>
             <Ionicons
               name={pumpStatus === "ON" ? "flash" : "flash-off"}
-              size={50}
-              color="#111"
+              size={60}
+              color="#fff"
               style={{ marginBottom: 12 }}
             />
-            <Text style={styles.cardTitle}>Pompe actuellement : {pumpStatus}</Text>
+
+            <Text style={styles.cardTitle}>Pompe actuellement :</Text>
+
+            <Text
+              style={[
+                styles.statusValue,
+                {
+                  color: pumpStatus === "ON" ? "#6CFF92" : "#FF6B6B",
+                },
+              ]}
+            >
+              {pumpStatus}
+            </Text>
 
             <TouchableOpacity
               onPress={togglePump}
               style={[
                 styles.button,
-                { backgroundColor: pumpStatus === "ON" ? "#d9534f" : "#5cb85c" },
+                { backgroundColor: pumpStatus === "ON" ? "#c0392b" : "#27ae60" },
               ]}
             >
               <Text style={styles.buttonText}>
@@ -70,6 +84,7 @@ export default function ControleScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+
         </ScrollView>
       </View>
     </ImageBackground>
@@ -90,29 +105,45 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     color: "#fff",
-    marginBottom: 30,
+    marginBottom: 70,
   },
+
+  /** 🟩 Carte principale */
   card: {
-    backgroundColor: "rgba(205, 255, 170, 0.25)",
-    borderRadius: 18,
-    padding: 30,
-    width: "80%",
+    backgroundColor: "rgba(0,0,0,0.35)",
+    borderRadius: 22,
+    padding: 35,
+    width: "85%",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "rgba(205, 255, 170, 0.5)",
-    elevation: 5,
+    borderColor: "rgba(255,255,255,0.2)",
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
   },
+
   cardTitle: {
-    color: "#fff",
+    color: "#EEE",
     fontWeight: "bold",
     fontSize: 18,
-    marginBottom: 20,
+    marginBottom: 10,
   },
+
+  /** 🟦 Texte ON / OFF */
+  statusValue: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 25,
+  },
+
+  /** 🔘 Bouton ON/OFF */
   button: {
-    borderRadius: 25,
+    borderRadius: 30,
     paddingVertical: 14,
     paddingHorizontal: 40,
     alignItems: "center",
+    marginTop: 10,
   },
   buttonText: {
     color: "#fff",
